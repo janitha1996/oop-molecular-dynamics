@@ -62,14 +62,25 @@ class VelocityVerletIntegrator(Integrator):
     """
 
     def __init__(self, dt: float):
-        # TODO: Add dt as an attribute
+        self.dt = dt
 
     def step(self, system: System, state: State) -> State:
         """
         Take an MD step. Update the state.
+        {
+        Vec3d new_pos = pos + vel*dt + acc*(dt*dt*0.5);
+        Vec3d new_acc = apply_forces();
+        Vec3d new_vel = vel + (acc+new_acc)*(dt*0.5);
+        pos = new_pos;
+        vel = new_vel;
+        acc = new_acc;
+        }
         """
         # TODO: Implemement how we update the state
-
+        state = self._velocity_update(system, state, self.dt * 0.5)
+        state = self._position_update(system, state, self.dt)
+        state = self._velocity_update(system, state, self.dt * 0.5)
+        return state
 
 class LangevinIntegratorBase(Integrator):
     """Base class for Langevin integrators
